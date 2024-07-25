@@ -1,0 +1,6 @@
+require("junep.plugins-setup")
+require("junep.plugins.lualine")
+require("junep.plugins.nvim-cmp")
+require("junep.plugins.nvim-tree")
+require("junep.plugins.telescope")
+require("junep.plugins.lsp")
