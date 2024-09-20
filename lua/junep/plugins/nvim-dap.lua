@@ -53,9 +53,13 @@ local dap_mappings = function()
 		vim.api.nvim_set_keymap(mode, lhs, rhs, options)
 	end
 
-	-- Define key mappings for debugging
-	map("n", "<leader>db", "<cmd> DapToggleBreakpoint <CR>", { desc = "Add breakpoint at line" })
-	map("n", "<leader>dr", "<cmd> DapContinue <CR>", { desc = "Start or continue the debugger" })
+	-- Define key mappings for debugging using commands instead of Lua function calls
+	map("n", "<leader>db", "<cmd>DapToggleBreakpoint<CR>", { desc = "Add breakpoint at line" })
+	map("n", "<leader>dr", "<cmd>DapContinue<CR>", { desc = "Start or continue the debugger" })
+	map("n", "<leader>di", "<cmd>DapStepInto<CR>", { desc = "Step into" })
+	map("n", "<leader>do", "<cmd>DapStepOver<CR>", { desc = "Step over" })
+	map("n", "<leader>du", "<cmd>DapStepOut<CR>", { desc = "Step out" })
+	map("n", "<leader>dq", "<cmd>DapTerminate<CR>", { desc = "Terminate debugger" })
 end
 
 -- Apply DAP key mappings
