@@ -33,6 +33,8 @@ return packer.startup(function(use)
 
 	use("nvim-lua/plenary.nvim") -- lua functions that many plugins use
 
+	use("MunifTanjim/nui.nvim") -- nui
+
 	use("bluz71/vim-nightfly-guicolors") -- preferred colorscheme
 
 	use("christoomey/vim-tmux-navigator") -- tmux & split window navigation
@@ -119,6 +121,23 @@ return packer.startup(function(use)
 			end
 		end,
 	})
+
+	-- leetcode
+	use({
+		"kawre/leetcode.nvim",
+		opt = false,
+		run = ":TSUpdate html",
+		requires = {
+			{ "nvim-telescope/telescope.nvim" },
+			{ "nvim-lua/plenary.nvim" }, -- required by telescope
+			{ "MunifTanjim/nui.nvim" },
+			-- optional dependencies
+			{ "nvim-treesitter/nvim-treesitter" },
+			{ "rcarriga/nvim-notify" },
+			{ "nvim-tree/nvim-web-devicons" },
+		},
+	})
+
 	if packer_bootstrap then
 		require("packer").sync()
 	end

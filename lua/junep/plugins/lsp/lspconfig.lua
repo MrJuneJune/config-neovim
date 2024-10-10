@@ -1,11 +1,19 @@
 -- import lspconfig plugin safely
 local lspconfig_status, lspconfig = pcall(require, "lspconfig")
 
+if not lspconfig_status then
+	return
+end
+
 -- import cmp-nvim-lsp plugin safely
 local cmp_nvim_lsp_status, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
 
--- import typescript plugin safely
-local typescript_setup, typescript = pcall(require, "typescript")
+if not cmp_nvim_lsp_status then
+	return
+end
+
+-- Deprecated.
+-- local typescript_setup, typescript = pcall(require, "typescript")
 
 local keymap = vim.keymap -- for conciseness
 
@@ -46,7 +54,6 @@ for type, icon in pairs(signs) do
 	local hl = "DiagnosticSign" .. type
 	vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 end
-
 -- configure html server
 lspconfig["html"].setup({
 	capabilities = capabilities,
@@ -54,10 +61,11 @@ lspconfig["html"].setup({
 })
 
 -- configure typescript server with plugin
-typescript.setup({
+lspconfig["ts_ls"].setup({
 	server = {
 		capabilities = capabilities,
 		on_attach = on_attach,
+		filetypes = { "typescript" },
 	},
 })
 
