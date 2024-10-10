@@ -1,144 +1,92 @@
--- auto install packer if not installed
-local ensure_packer = function()
-	local fn = vim.fn
-	local install_path = fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
-	if fn.empty(fn.glob(install_path)) > 0 then
-		fn.system({ "git", "clone", "--depth", "1", "https://github.com/wbthomason/packer.nvim", install_path })
-		vim.cmd([[packadd packer.nvim]])
-		return true
-	end
-	return false
-end
-local packer_bootstrap = ensure_packer() -- true if packer was just installed
+-- Set up Lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
--- autocommand that reloads neovim and installs/updates/removes plugins
--- when file is saved
-vim.cmd([[
-  augroup packer_user_config
-    autocmd!
-    autocmd BufWritePost plugins-setup.lua source <afile> | PackerSync
-  augroup end
-]])
-
--- import packer safely
-local status, packer = pcall(require, "packer")
-if not status then
-	return
-end
-
--- add list of plugins to install
-return packer.startup(function(use)
-	-- packer can manage itself
-	use("wbthomason/packer.nvim")
-
-	use("nvim-lua/plenary.nvim") -- lua functions that many plugins use
-
-	use("MunifTanjim/nui.nvim") -- nui
-
-	use("bluz71/vim-nightfly-guicolors") -- preferred colorscheme
-
-	use("christoomey/vim-tmux-navigator") -- tmux & split window navigation
-
-	use("szw/vim-maximizer") -- maximizes and restores current window
-
-	-- essential plugins
-	use("tpope/vim-surround") -- add, delete, change surroundings (it's awesome)
-
-	-- file explorer
-	use("nvim-tree/nvim-tree.lua")
-
-	-- vs-code like icons
-	use("nvim-tree/nvim-web-devicons")
-
-	-- statusline
-	use("nvim-lualine/lualine.nvim")
-
-	-- fuzzy finding w/ telescope
-	use({ "nvim-telescope/telescope-fzf-native.nvim", run = "make" }) -- dependency for better sorting performance
-	use({ "nvim-telescope/telescope.nvim", branch = "0.1.x" }) -- fuzzy finder
-
-	-- autocompletion
-	use("hrsh7th/nvim-cmp") -- completion plugin
-	use("hrsh7th/cmp-buffer") -- source for text in buffer
-	use("hrsh7th/cmp-path") -- source for file system paths
-
-	-- snippets
-	use("L3MON4D3/LuaSnip") -- snippet engine
-	use("saadparwaiz1/cmp_luasnip") -- for autocompletion
-	use("rafamadriz/friendly-snippets") -- useful snippets
-
-	-- managing & installing lsp servers, linters & formatters
-	use("williamboman/mason.nvim") -- in charge of managing lsp servers, linters & formatters
-	use("williamboman/mason-lspconfig.nvim") -- bridges gap b/w mason & lspconfig
-
-	-- configuring lsp servers
-	use("neovim/nvim-lspconfig") -- easily configure language servers
-	use("hrsh7th/cmp-nvim-lsp") -- for autocompletion
-	use("nvim-treesitter/nvim-treesitter")
-	use({
-		"glepnir/lspsaga.nvim",
-		branch = "main",
-		requires = {
-			{ "nvim-tree/nvim-web-devicons" },
-			{ "nvim-treesitter/nvim-treesitter" },
-		},
-	}) -- enhanced lsp uis
-	use("jose-elias-alvarez/typescript.nvim") -- additional functionality for typescript server (e.g. rename file & update imports)
-	use("onsails/lspkind.nvim") -- vs-code like icons for autocompletion
-
-	-- formatting & linting
-	use("jose-elias-alvarez/null-ls.nvim") -- configure formatters & linters
-	use("jayp0521/mason-null-ls.nvim") -- bridges gap b/w mason & null-ls
-
-	-- vim wiki
-	use("lervag/wiki.vim")
-
-	-- mason-nvim-dap
-	use("mfussenegger/nvim-dap")
-	use({
-		"jay-babu/mason-nvim-dap.nvim",
-		require = { "williamboman/mason.nvim", "mfussenegger/nvim-dap" },
-		config = {},
+if not vim.loop.fs_stat(lazypath) then
+	vim.fn.system({
+		"git",
+		"clone",
+		"--filter=blob:none",
+		"https://github.com/folke/lazy.nvim.git",
+		"--branch=stable", -- latest stable release
+		lazypath,
 	})
+end
+vim.opt.rtp:prepend(lazypath)
 
-	-- nvim-dap-ui
-	use({
-		"rcarriga/nvim-dap-ui",
-		requires = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
-		config = function()
-			local dap = require("dap")
-			local dapui = require("dapui")
-			dapui.setup()
+-- Plugins configuration
+require("lazy").setup({
+	-- Essential plugins
+	{ "nvim-lua/plenary.nvim" }, -- Lua functions used by many plugins
+	{ "MunifTanjim/nui.nvim" }, -- NUI library
 
-			dap.listeners.after.event_initialized["dapui_config"] = function()
-				dapui.open()
-			end
-			dap.listeners.before.event_terminated["dapui_config"] = function()
-				dapui.close()
-			end
-			dap.listeners.before.event_exited["dapui_config"] = function()
-				dapui.close()
-			end
-		end,
-	})
+	-- Colorscheme
+	{ "bluz71/vim-nightfly-guicolors" },
 
-	-- leetcode
-	use({
+	-- Navigation and window management
+	{ "christoomey/vim-tmux-navigator" }, -- Tmux & split window navigation
+	{ "szw/vim-maximizer" }, -- Maximizes and restores the current window
+
+	-- Text manipulation
+	{ "tpope/vim-surround" }, -- Add, delete, change surroundings easily
+
+	-- File explorer
+	{ "nvim-tree/nvim-tree.lua" },
+	{ "nvim-tree/nvim-web-devicons" }, -- File icons for Neovim
+
+	-- Status line
+	{ "nvim-lualine/lualine.nvim" },
+
+	-- Fuzzy Finder (Telescope)
+	{ "nvim-telescope/telescope.nvim", branch = "0.1.x" },
+	{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" }, -- Improved sorter
+
+	-- Autocompletion
+	{ "hrsh7th/nvim-cmp" }, -- Autocompletion framework
+	{ "hrsh7th/cmp-buffer" }, -- Buffer source for nvim-cmp
+	{ "hrsh7th/cmp-path" }, -- Path source for nvim-cmp
+
+	-- Snippets
+	{ "L3MON4D3/LuaSnip" }, -- Snippet engine
+	{ "saadparwaiz1/cmp_luasnip" }, -- Snippet source for nvim-cmp
+	{ "rafamadriz/friendly-snippets" }, -- Collection of snippets
+
+	-- LSP management
+	{ "williamboman/mason.nvim" }, -- Manage LSP servers, linters, and formatters
+	{ "williamboman/mason-lspconfig.nvim" }, -- Mason + LSPConfig integration
+    { "jay-babu/mason-nvim-dap.nvim"}, -- neovim dap
+	{ "neovim/nvim-lspconfig" }, -- Configure LSP servers
+	{ "hrsh7th/cmp-nvim-lsp" }, -- LSP source for nvim-cmp
+
+	-- Treesitter (syntax highlighting)
+	{ "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" },
+
+	-- LSP UI enhancements
+	{ "glepnir/lspsaga.nvim", branch = "main" },
+
+	-- TypeScript enhancements
+	{ "jose-elias-alvarez/typescript.nvim" },
+
+	-- Linting & formatting
+	{ "jose-elias-alvarez/null-ls.nvim" }, -- Configure formatters & linters
+	{ "jayp0521/mason-null-ls.nvim" }, -- Bridge Mason & null-ls
+
+	-- Debugging
+	{ "mfussenegger/nvim-dap" },
+	{ "rcarriga/nvim-dap-ui" },
+
+	-- Additional plugins
+	{ "lervag/wiki.vim" }, -- Personal wiki
+
+	-- Leetcode integration
+	{
 		"kawre/leetcode.nvim",
-		opt = false,
-		run = ":TSUpdate html",
 		requires = {
 			{ "nvim-telescope/telescope.nvim" },
-			{ "nvim-lua/plenary.nvim" }, -- required by telescope
+			{ "nvim-lua/plenary.nvim" },
 			{ "MunifTanjim/nui.nvim" },
-			-- optional dependencies
 			{ "nvim-treesitter/nvim-treesitter" },
 			{ "rcarriga/nvim-notify" },
 			{ "nvim-tree/nvim-web-devicons" },
 		},
-	})
-
-	if packer_bootstrap then
-		require("packer").sync()
-	end
-end)
+	},
+})
