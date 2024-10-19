@@ -53,7 +53,7 @@ require("lazy").setup({
 	-- LSP management
 	{ "williamboman/mason.nvim" }, -- Manage LSP servers, linters, and formatters
 	{ "williamboman/mason-lspconfig.nvim" }, -- Mason + LSPConfig integration
-    { "jay-babu/mason-nvim-dap.nvim"}, -- neovim dap
+	{ "jay-babu/mason-nvim-dap.nvim" }, -- neovim dap
 	{ "neovim/nvim-lspconfig" }, -- Configure LSP servers
 	{ "hrsh7th/cmp-nvim-lsp" }, -- LSP source for nvim-cmp
 
@@ -72,7 +72,7 @@ require("lazy").setup({
 
 	-- Debugging
 	{ "mfussenegger/nvim-dap" },
-	{ "rcarriga/nvim-dap-ui" },
+	{ "rcarriga/nvim-dap-ui", dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" } },
 
 	-- Additional plugins
 	{ "lervag/wiki.vim" }, -- Personal wiki

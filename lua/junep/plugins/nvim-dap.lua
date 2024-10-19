@@ -1,6 +1,12 @@
 -- Safely import nvim-dap
 local dap_setup, dap = pcall(require, "dap")
+local dap_ui_setup, dapui = pcall(require, "dapui")
 if not dap_setup then
+	return
+end
+
+if not dap_ui_setup then
+	print("dap ui not setup!") -- print error if colorscheme not installed
 	return
 end
 
@@ -58,7 +64,7 @@ local dap_mappings = function()
 	map("n", "<leader>dr", "<cmd>DapContinue<CR>", { desc = "Start or continue the debugger" })
 	map("n", "<leader>di", "<cmd>DapStepInto<CR>", { desc = "Step into" })
 	map("n", "<leader>do", "<cmd>DapStepOver<CR>", { desc = "Step over" })
-	map("n", "<leader>du", "<cmd>DapStepOut<CR>", { desc = "Step out" })
+	map("n", "<leader>ds", "<cmd>DapStepOut<CR>", { desc = "Step out" })
 	map("n", "<leader>dq", "<cmd>DapTerminate<CR>", { desc = "Terminate debugger" })
 end
 
@@ -67,3 +73,15 @@ dap_mappings()
 
 -- Reuse the C++ configuration for C
 dap.configurations.c = dap.configurations.cpp
+
+-- dap ui setup
+dapui.setup()
+dap.listeners.before.attach.dapui_config = function()
+	dapui.open()
+end
+dap.listeners.before.launch.dapui_config = function()
+	dapui.open()
+end
+
+-- Keybindings to open the UI
+vim.keymap.set("n", "<leader>du", dapui.toggle)

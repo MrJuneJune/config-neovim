@@ -10,9 +10,34 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(CMAKE_OSX_ARCHITECTURES "arm64")
 
+project(foo VERSION 0.5
+  DESCRIPTION "bar zoo"
+  LANGUAGES CXX)
+
+include_directories(include)
+
+# Add all source files in the src directory
 set(SOURCES
     main.cpp
 )
+
+# You can do this if needed
+# file(GLOB SOURCES src/*.cpp)
+
+add_executable(space_invader ${SOURCES})
+
+# set the include and library paths manually because cmake can't find this.
+set(raylib_INCLUDE_DIR /home/linuxbrew/.linuxbrew/opt/raylib/include)
+set(raylib_LIBRARY /home/linuxbrew/.linuxbrew/opt/raylib/lib/libraylib.a)
+
+# Third party
+find_package(raylib REQUIRED)
+
+# Include raylib headers
+include_directories(${raylib_INCLUDE_DIR})
+
+# Link raylib library after the executable target is created
+target_link_libraries(foo PRIVATE ${raylib_LIBRARY})
 ]]
 
 	vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(cmake_template, "\n"))
